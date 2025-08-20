@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 import './globals.css'
 import { ThemeProvider } from './contexts/ThemeContext'
 import QueryProvider from './providers/QueryProvider'
-import ThemeSwitcher from './components/ThemeSwitcher'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -33,11 +33,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <title>Hello bonjour</title>
+      <meta name="description" content="Web developer portfolio" />
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ThemeProvider>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            {children}
+            {process.env.NODE_ENV === 'development' && (
+              <ReactQueryDevtools initialIsOpen={false} />
+            )}
+          </QueryProvider>
         </ThemeProvider>
       </body>
     </html>

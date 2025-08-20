@@ -1,26 +1,27 @@
 import { useState } from 'react'
-import { Recipe } from '../_recipes'
+import { Recipe } from '../services/schemas'
 
 export function useKeyboardNavigation(
-  filteredRecipes: Record<string, any>[],
-  selectedRecipe: Record<string, any> | null,
-  setSelectedRecipe: (recipe: Record<string, any> | null) => void
+  filteredRecipes: Recipe[],
+  selectedRecipe: Recipe | null,
+  setSelectedRecipe: (recipe: Recipe | null) => void
 ) {
-  const length = filteredRecipes.length
+  const length = filteredRecipes?.length || 0
   const [focusedRecipeIndex, setFocusedRecipeIndex] = useState<number>(-1)
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (filteredRecipes.length === 0) return
+    if (filteredRecipes?.length === 0) return
 
     switch (e.key) {
       case 'ArrowDown':
         e.preventDefault()
+        if (!filteredRecipes) return
         if (!selectedRecipe) {
           setSelectedRecipe(filteredRecipes[0])
           setFocusedRecipeIndex(0)
         } else {
           const nextIndex = filteredRecipes.findIndex(
-            r => r.id === selectedRecipe?.id
+            r => r.id === selectedRecipe.id
           )
           if (nextIndex === length - 1) {
             setSelectedRecipe(filteredRecipes[0])
@@ -33,6 +34,7 @@ export function useKeyboardNavigation(
         break
       case 'ArrowUp':
         e.preventDefault()
+        if (!filteredRecipes) return
         if (!selectedRecipe) {
           setSelectedRecipe(filteredRecipes[0])
           setFocusedRecipeIndex(0)
@@ -53,32 +55,21 @@ export function useKeyboardNavigation(
         e.preventDefault()
         setSelectedRecipe(null)
         break
-      case 'Home':
-        e.preventDefault()
-        setSelectedRecipe(filteredRecipes[0])
-        setFocusedRecipeIndex(0)
-        break
-      case 'End':
-        e.preventDefault()
-        const lastIndex = filteredRecipes.length - 1
-        setSelectedRecipe(filteredRecipes[lastIndex])
-        setFocusedRecipeIndex(lastIndex)
-        break
     }
   }
 
-  const handleRecipeSelect = (recipe: Record<string, any>) => {
+  const handleRecipeSelect = (recipe: Recipe) => {
     setSelectedRecipe(recipe)
-    const index = filteredRecipes.findIndex(r => r.id === recipe.id)
+    const index = filteredRecipes?.findIndex(r => r.id === recipe.id) || 0
     setFocusedRecipeIndex(index)
   }
 
   const validateSelectedRecipe = () => {
     if (
       selectedRecipe &&
-      !filteredRecipes.find(r => r.id === selectedRecipe.id)
+      !filteredRecipes?.find(r => r.id === selectedRecipe.id)
     ) {
-      setSelectedRecipe(filteredRecipes[0] ?? null)
+      setSelectedRecipe(filteredRecipes?.[0] ?? null)
     }
   }
 

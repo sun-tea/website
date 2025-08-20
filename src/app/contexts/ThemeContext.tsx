@@ -64,7 +64,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!initialized) return
 
-    // Resolve the actual theme (light/dark) based on current setting
     let newResolvedTheme: 'light' | 'dark'
 
     if (theme === 'system') {
@@ -78,21 +77,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
     setResolvedTheme(newResolvedTheme)
 
-    // Update document class
     if (typeof document !== 'undefined') {
       document.documentElement.classList.remove('light', 'dark')
       document.documentElement.classList.add(newResolvedTheme)
     }
 
-    // Save preference
     if (typeof localStorage !== 'undefined') {
       localStorage.setItem('theme', theme)
     }
-
-    console.log('Theme resolved to:', newResolvedTheme, 'from setting:', theme)
   }, [theme, initialized])
 
-  // Listen for system theme changes
   useEffect(() => {
     if (!initialized || theme !== 'system') return
 
@@ -105,7 +99,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         document.documentElement.classList.remove('light', 'dark')
         document.documentElement.classList.add(newResolvedTheme)
       }
-      console.log('System theme changed to:', newResolvedTheme)
     }
 
     mediaQuery.addEventListener('change', handleChange)

@@ -1,21 +1,7 @@
-export interface Recipe {
-  id: string
-  name: string
-  cookTime: number
-  difficulty: 'beginner' | 'easy' | 'medium'
-  category: 'breakfast' | 'lunch' | 'dinner' | 'snack'
-  ingredients: string[]
-  instructions: string[]
-  calories?: number
-  protein?: number
-  image?: string
-  source: 'mealdb' | 'spoonacular' | 'edamam' | 'manual'
-  tags: string[]
-  description: string
-}
+import { MealDBMeal, Recipe, SpoonacularMeal } from './services/schemas'
 
 export interface RecipeAdapter {
-  transform(rawData: any): Recipe
-  fetchByCategory(category: string): Promise<any[]>
-  search(query: string): Promise<any[]>
+  transform(rawData: Record<string, unknown>): Recipe
+  fetchByCategory(category: string): Promise<Recipe[]>
+  search(query: string): Promise<Recipe[]>
 }

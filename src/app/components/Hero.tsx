@@ -2,7 +2,7 @@ export default function Hero() {
   return (
     <div className="text-center mb-20">
       <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
-        Hi, I'm Sun
+        Hi, I&apos;m Sun
       </h1>
       <div className="max-w-2xl mx-auto">
         <p className="text-xl text-gray-700 dark:text-gray-300 mb-2">

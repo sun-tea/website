@@ -2,19 +2,18 @@
 
 import { useRef, useEffect } from 'react'
 
-import { Recipe } from '../_recipes'
-
+import { Recipe } from '../services/schemas'
 import RecipeItem from './RecipeItem'
 
 interface RecipeSidebarProps {
-  filteredRecipes: Record<string, any>[]
+  filteredRecipes: Recipe[]
   selectedCategory: string
   selectedDifficulty: string
-  selectedRecipe: Record<string, any> | null
+  selectedRecipe: Recipe | null
   focusedRecipeIndex: number
   onCategoryChange: (category: string) => void
   onDifficultyChange: (difficulty: string) => void
-  onRecipeSelect: (recipe: Record<string, any>) => void
+  onRecipeSelect: (recipe: Recipe) => void
   getDifficultyColor: (difficulty: string) => string
   getCategoryEmoji: (category: string) => string
 }

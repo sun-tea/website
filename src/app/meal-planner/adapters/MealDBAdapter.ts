@@ -1,69 +1,146 @@
-import { Recipe, RecipeAdapter } from '../types'
+import {
+  MealDBMeal,
+  MealDBListResponseSchema,
+  Recipe,
+} from '../services/schemas'
+import { RecipeAdapter } from '../types'
 
+// Data transformation layer
 export class MealDBAdapter implements RecipeAdapter {
   private baseUrl = 'https://www.themealdb.com/api/json/v1/1'
 
-  transform(mealDbData: any): Recipe {
-    // MealDB specific transformation
+  transform(meal: MealDBMeal): Recipe {
     return {
-      id: `mealdb-${mealDbData.idMeal}`,
-      name: mealDbData.strMeal,
-      cookTime: this.estimateCookTime(mealDbData.strInstructions), // Custom logic
-      difficulty: this.calculateDifficulty(mealDbData), // Custom logic
-      category: this.mapCategory(mealDbData.strCategory),
-      ingredients: this.extractIngredients(mealDbData),
-      instructions: this.parseInstructions(mealDbData.strInstructions),
-      calories: undefined, // MealDB doesn't provide this
+      id: `mealdb-${meal.idMeal}`,
+      name: meal.strMeal,
+      cookTime: this.estimateCookTime(meal.strInstructions), // Custom logic
+      difficulty: this.calculateDifficulty(meal), // Custom logic
+      category: this.mapCategory(meal.strCategory || ''),
+      ingredients: this.extractIngredients(meal),
+      instructions: this.parseInstructions(meal.strInstructions),
       protein: undefined,
-      image: mealDbData.strMealThumb,
+      image: meal.strMealThumb,
       source: 'mealdb',
-      tags: this.extractTags(mealDbData),
-      description: `${mealDbData.strCategory} recipe from ${mealDbData.strArea || 'International'} cuisine`,
+      tags: this.extractTags(meal),
+      description: `${meal.strCategory || 'International'} recipe${meal.strArea ? ` from ${meal.strArea}` : ''}`,
     }
   }
 
-  async fetchByCategory(category: string): Promise<any[]> {
-    const response = await fetch(`${this.baseUrl}/filter.php?c=${category}`)
-    const data = await response.json()
-    return data.meals || []
+  async fetchByCategory(category?: string): Promise<Recipe[]> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/filter.php?c=${category || ''}`
+      )
+      if (!response.ok) {
+        throw new Error(`MealDB API error: ${response.status}`)
+      }
+
+      const rawData = await response.json()
+      const validatedData = MealDBListResponseSchema.parse(rawData)
+
+      if (!validatedData.meals) {
+        return []
+      }
+
+      // For category queries, we need to fetch full details for each recipe
+      const detailedRecipes = await Promise.all(
+        validatedData.meals
+          .slice(0, 12)
+          .filter(meal => !!meal)
+          .map(meal => this.fetchMealDetails(meal.idMeal))
+      )
+
+      return detailedRecipes.filter(recipe => recipe !== null) as Recipe[]
+    } catch (error) {
+      console.error('MealDB fetch error:', error)
+      throw new Error(
+        `Failed to fetch recipes from MealDB: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
   }
 
-  async search(query: string): Promise<any[]> {
-    const response = await fetch(`${this.baseUrl}/search.php?s=${query}`)
-    const data = await response.json()
-    return data.meals || []
+  private async fetchMealDetails(mealId: string): Promise<Recipe | null> {
+    try {
+      const response = await fetch(`${this.baseUrl}/lookup.php?i=${mealId}`)
+      const rawData = await response.json()
+      const validatedData = MealDBListResponseSchema.parse(rawData)
+
+      if (!validatedData.meals?.[0]) {
+        return null
+      }
+
+      return this.transform(validatedData.meals[0])
+    } catch (error) {
+      console.error(`Error fetching meal details for ${mealId}:`, error)
+      return null
+    }
   }
 
-  private extractIngredients(meal: any): string[] {
+  async search(query: string): Promise<Recipe[]> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}/search.php?s=${encodeURIComponent(query)}`
+      )
+      if (!response.ok) {
+        throw new Error(`MealDB API error: ${response.status}`)
+      }
+
+      const rawData = await response.json()
+      const validatedData = MealDBListResponseSchema.parse(rawData)
+
+      if (!validatedData.meals) {
+        return []
+      }
+
+      return validatedData.meals.map(meal => this.transform(meal))
+    } catch (error) {
+      console.error('MealDB search error:', error)
+      throw new Error(
+        `Failed to search recipes: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+  }
+
+  private extractIngredients(meal: MealDBMeal): string[] {
     const ingredients: string[] = []
     for (let i = 1; i <= 20; i++) {
-      const ingredient = meal[`strIngredient${i}`]
-      const measure = meal[`strMeasure${i}`]
-      if (ingredient && ingredient.trim()) {
-        ingredients.push(`${measure?.trim() || ''} ${ingredient.trim()}`.trim())
+      const ingredient = meal[`strIngredient${i}` as keyof MealDBMeal] as string
+      const measure = meal[`strMeasure${i}` as keyof MealDBMeal] as string
+
+      if (ingredient?.trim()) {
+        const fullIngredient = measure?.trim()
+          ? `${measure.trim()} ${ingredient.trim()}`
+          : ingredient.trim()
+        ingredients.push(fullIngredient)
       }
     }
     return ingredients
   }
 
-  private parseInstructions(instructions: string): string[] {
+  private parseInstructions(instructions?: string): string[] {
+    if (!instructions) return []
+
     return instructions
       .split(/\r?\n/)
-      .filter(step => step.trim())
       .map(step => step.trim())
+      .filter(step => step.length > 0)
+      .map(step => step.replace(/^\d+\.?\s*/, '')) // Remove step numbers
   }
 
   private mapCategory(category: string): Recipe['category'] {
-    const mapping: Record<string, Recipe['category']> = {
-      Breakfast: 'breakfast',
-      Dessert: 'snack',
-      Starter: 'snack',
-      // Add more mappings
+    const categoryMap: Record<string, Recipe['category']> = {
+      breakfast: 'breakfast',
+      starter: 'snack',
+      dessert: 'snack',
+      side: 'snack',
+      // more mappings to come
     }
-    return mapping[category] || 'dinner'
+
+    const lowerCategory = category.toLowerCase()
+    return categoryMap[lowerCategory] || 'dinner'
   }
 
-  private calculateDifficulty(meal: any): Recipe['difficulty'] {
+  private calculateDifficulty(meal: MealDBMeal): Recipe['difficulty'] {
     const instructionLength = meal.strInstructions?.length || 0
     const ingredientCount = this.extractIngredients(meal).length
 
@@ -72,37 +149,50 @@ export class MealDBAdapter implements RecipeAdapter {
     return 'medium'
   }
 
-  private estimateCookTime(instructions: string): number {
-    // Simple heuristic based on instruction length and keywords
-    const timeKeywords = instructions.match(/(\d+)\s*(minute|min|hour|hr)/gi)
-    if (timeKeywords) {
-      // Extract and sum times mentioned
-      const times = timeKeywords.map(match => {
-        const num = parseInt(match.match(/\d+/)?.[0] || '0')
-        const unit = match.toLowerCase()
-        return unit.includes('hour') || unit.includes('hr') ? num * 60 : num
+  private estimateCookTime(instructions?: string): number {
+    if (!instructions) return 30
+
+    // Look for time mentions in instructions
+    const timeRegex = /(\d+)\s*(minutes?|mins?|hours?|hrs?)/gi
+    const matches = instructions.match(timeRegex)
+
+    if (matches) {
+      const times = matches.map(match => {
+        const [, num, unit] =
+          match.match(/(\d+)\s*(minutes?|mins?|hours?|hrs?)/i) || []
+        const minutes =
+          parseInt(num) *
+          (unit.toLowerCase().includes('hour') ||
+          unit.toLowerCase().includes('hr')
+            ? 60
+            : 1)
+        return minutes
       })
       return Math.max(...times)
     }
 
-    // Fallback: estimate based on instruction length
+    // Fallback based on instruction length
     const length = instructions.length
-    if (length < 300) return 15
-    if (length < 600) return 30
+    if (length < 200) return 15
+    if (length < 400) return 25
+    if (length < 800) return 35
     return 45
   }
 
-  private extractTags(meal: any): string[] {
-    const tags = []
+  private extractTags(meal: MealDBMeal): string[] {
+    const tags: string[] = []
+
     if (meal.strCategory) tags.push(meal.strCategory.toLowerCase())
     if (meal.strArea) tags.push(meal.strArea.toLowerCase())
+
     if (meal.strTags) {
-      tags.push(
-        ...meal.strTags
-          .split(',')
-          .map((tag: string) => tag.trim().toLowerCase())
-      )
+      const mealTags = meal.strTags
+        .split(',')
+        .map(tag => tag.trim().toLowerCase())
+        .filter(tag => tag.length > 0)
+      tags.push(...mealTags)
     }
-    return tags
+
+    return [...new Set(tags)] // Remove duplicates
   }
 }

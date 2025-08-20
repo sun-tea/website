@@ -1,37 +1,24 @@
-// app/meal-planner/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useQuery } from '@tanstack/react-query'
 
 import RecipeSidebar from './components/RecipeSidebar'
 import RecipeDetails from './components/RecipeDetails'
 import { getDifficultyColor, getCategoryEmoji } from './utils/recipeUtils'
 import { useKeyboardNavigation } from './hooks/useKeyboardNavigation'
 import ThemeToggle from '../components/ThemeToggle'
-
-type Meal = {
-  id: string
-}
+import { useRecipesByCategory } from './hooks/useRecipes'
+import { Recipe } from './services/schemas'
 
 export default function MealPlanner() {
-  const { data, isLoading, error } = useQuery<{ meals: Meal[] }>({
-    queryKey: ['meals', 'vegetarian'],
-    queryFn: () =>
-      fetch(
-        'https://www.themealdb.com/api/json/v1/1/filter.php?c=Vegetarian'
-      ).then(res => res.json()),
-  })
+  const { data: recipes, isLoading } = useRecipesByCategory('Vegetarian')
 
-  console.log(data?.meals)
+  // const { data: searchResults } = useRecipeSearch(searchQuery, ['mealdb']);
 
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
-  const [selectedRecipe, setSelectedRecipe] = useState<Record<
-    string,
-    any
-  > | null>(null)
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
 
   // const filteredRecipes = sampleRecipes.filter(recipe => {
   //   const categoryMatch =
@@ -41,7 +28,7 @@ export default function MealPlanner() {
   //   return categoryMatch && difficultyMatch
   // })
 
-  const filteredRecipes = data?.meals || []
+  const filteredRecipes = recipes || []
 
   const {
     focusedRecipeIndex,

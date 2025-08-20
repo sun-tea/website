@@ -1,6 +1,7 @@
 import { MealDBAdapter } from '../adapters/MealDBAdapter'
 import { SpoonacularAdapter } from '../adapters/SpoonacularAdapter'
-import { Recipe, RecipeAdapter } from '../types'
+import { RecipeAdapter } from '../types'
+import { Recipe, RecipeSchema } from './schemas'
 
 export class RecipeService {
   private adapters: Map<string, RecipeAdapter> = new Map()
@@ -8,7 +9,7 @@ export class RecipeService {
   constructor() {
     this.adapters.set('mealdb', new MealDBAdapter())
     this.adapters.set('spoonacular', new SpoonacularAdapter())
-    // Add more adapters as needed
+    // More adapters to come
   }
 
   async searchRecipes(
@@ -22,6 +23,10 @@ export class RecipeService {
       if (!adapter) continue
 
       try {
+        if (query.trim().length < 2) {
+          return []
+        }
+
         const rawData = await adapter.search(query)
         const transformedRecipes = rawData.map(data => adapter.transform(data))
         allRecipes.push(...transformedRecipes)
@@ -45,9 +50,8 @@ export class RecipeService {
       if (!adapter) continue
 
       try {
-        const rawData = await adapter.fetchByCategory(category)
-        const transformedRecipes = rawData.map(data => adapter.transform(data))
-        allRecipes.push(...transformedRecipes)
+        const recipes = await adapter.fetchByCategory(category)
+        allRecipes.push(...recipes)
       } catch (error) {
         console.error(`Error fetching from ${source}:`, error)
       }
@@ -62,7 +66,7 @@ export class RecipeService {
       const key = recipe.name.toLowerCase().replace(/\s+/g, '')
       if (seen.has(key)) return false
       seen.add(key)
-      return true
+      return RecipeSchema.parse(recipe)
     })
   }
 }

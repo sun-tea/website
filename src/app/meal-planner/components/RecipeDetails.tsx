@@ -1,9 +1,9 @@
 'use client'
 
-import { Recipe } from '../_recipes'
+import { Recipe } from '../services/schemas'
 
 interface RecipeDetailsProps {
-  selectedRecipe: Record<string, any> | null
+  selectedRecipe: Recipe | null
   onClose: () => void
   getDifficultyColor: (difficulty: string) => string
   getCategoryEmoji: (category: string) => string
@@ -69,16 +69,8 @@ export default function RecipeDetails({
             </div>
           </div>
           <div className="text-center p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-            <div className="text-lg font-bold text-green-600 dark:text-green-400">
-              {selectedRecipe.calories}
-            </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              Calories
-            </div>
-          </div>
-          <div className="text-center p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
             <div className="text-lg font-bold text-purple-600 dark:text-purple-400">
-              {selectedRecipe.protein}g
+              {selectedRecipe.protein ? `${selectedRecipe.protein}g` : 'N/A'}
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400">
               Protein
@@ -103,7 +95,7 @@ export default function RecipeDetails({
               key={tag}
               className="bg-blue-50 dark:bg-blue-900 text-blue-700 dark:text-blue-300 px-2 py-1 rounded-full text-xs"
             >
-              #{tag}
+              {tag}
             </span>
           ))}
         </div>

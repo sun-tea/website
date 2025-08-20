@@ -1,8 +1,8 @@
 'use client'
 
-import { Recipe } from '../_recipes'
+import { Recipe } from '../services/schemas'
 
-export default function RecipeSidebar({
+export default function RecipeItem({
   recipe,
   onRecipeSelect,
   selectedRecipe,
@@ -10,9 +10,9 @@ export default function RecipeSidebar({
   getDifficultyColor,
   getCategoryEmoji,
 }: {
-  recipe: Record<string, any>
-  onRecipeSelect: (recipe: Record<string, any>) => void
-  selectedRecipe: Record<string, any> | null
+  recipe: Recipe
+  onRecipeSelect: (recipe: Recipe) => void
+  selectedRecipe: Recipe | null
   index: number
   getDifficultyColor: (difficulty: string) => string
   getCategoryEmoji: (category: string) => string

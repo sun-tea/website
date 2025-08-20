@@ -1,52 +1,45 @@
-import { Recipe, RecipeAdapter } from '../types'
+import { Recipe, SpoonacularMeal } from '../services/schemas'
+import { RecipeAdapter } from '../types'
 
-// adapters/SpoonacularAdapter.ts
 export class SpoonacularAdapter implements RecipeAdapter {
-  private apiKey = process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY
-  private baseUrl = 'https://api.spoonacular.com/recipes'
+  private baseUrl = `https://api.spoonacular.com/recipes/`
+  private key = `?apiKey=${process.env.SPOONACULAR_API_KEY}&`
 
-  transform(spoonData: any): Recipe {
+  transform(meal: SpoonacularMeal): Recipe {
     return {
-      id: `spoon-${spoonData.id}`,
-      name: spoonData.title,
-      cookTime: spoonData.readyInMinutes || 30,
-      difficulty: this.calculateDifficulty(spoonData),
-      category: this.mapMealType(spoonData.dishTypes?.[0]),
-      ingredients:
-        spoonData.extendedIngredients?.map((ing: any) => ing.original) || [],
-      instructions: this.parseSpoonInstructions(spoonData.analyzedInstructions),
-      calories: spoonData.nutrition?.nutrients?.find(
-        (n: any) => n.name === 'Calories'
-      )?.amount,
-      protein: spoonData.nutrition?.nutrients?.find(
-        (n: any) => n.name === 'Protein'
-      )?.amount,
-      image: spoonData.image,
+      id: `spoon-${meal.id}`,
+      name: meal.title,
+      cookTime: meal.readyInMinutes || 30,
+      difficulty: this.calculateDifficulty(meal),
+      category: this.mapMealType(meal.dishTypes?.[0]),
+      ingredients: meal.extendedIngredients?.map(ing => ing.original) || [],
+      instructions: this.parseSpoonInstructions(meal.analyzedInstructions),
+      image: meal.image,
       source: 'spoonacular',
-      tags: [...(spoonData.dishTypes || []), ...(spoonData.cuisines || [])],
+      tags: [...(meal.dishTypes || [])],
       description:
-        spoonData.summary?.replace(/<[^>]*>/g, '').slice(0, 200) ||
-        'Delicious recipe',
+        meal.summary?.replace(/<[^>]*>/g, '').slice(0, 200) ||
+        'Yum yummy recipe',
     }
   }
 
-  async fetchByCategory(category: string): Promise<any[]> {
+  async fetchByCategory(category: string): Promise<Recipe[]> {
     const response = await fetch(
-      `${this.baseUrl}/complexSearch?type=${category}&apiKey=${this.apiKey}&addRecipeInformation=true&number=12`
+      `${this.baseUrl}/complexSearch${this.key}diet=${category}`
     )
     const data = await response.json()
-    return data.results || []
+    return data || []
   }
 
-  async search(query: string): Promise<any[]> {
+  async search(query: string): Promise<Recipe[]> {
     const response = await fetch(
-      `${this.baseUrl}/complexSearch?query=${query}&apiKey=${this.apiKey}&addRecipeInformation=true&number=12`
+      `${this.baseUrl}/complexSearch${this.key}query=${query}`
     )
     const data = await response.json()
-    return data.results || []
+    return data || []
   }
 
-  private calculateDifficulty(recipe: any): Recipe['difficulty'] {
+  private calculateDifficulty(recipe: SpoonacularMeal): Recipe['difficulty'] {
     const time = recipe.readyInMinutes || 30
     const steps = recipe.analyzedInstructions?.[0]?.steps?.length || 5
 
@@ -69,9 +62,14 @@ export class SpoonacularAdapter implements RecipeAdapter {
     return 'dinner'
   }
 
-  private parseSpoonInstructions(analyzedInstructions: any[]): string[] {
+  private parseSpoonInstructions(
+    analyzedInstructions: SpoonacularMeal['analyzedInstructions']
+  ): string[] {
     if (!analyzedInstructions?.[0]?.steps) return []
 
-    return analyzedInstructions[0].steps.map((step: any) => step.step)
+    return analyzedInstructions[0].steps.map(
+      (step: SpoonacularMeal['analyzedInstructions'][0]['steps'][0]) =>
+        step.step
+    )
   }
 }
