@@ -1,4 +1,4 @@
-import { MealDBMeal, Recipe, SpoonacularMeal } from './services/schemas'
+import { Recipe } from './services/schemas'
 
 export interface RecipeAdapter {
   transform(rawData: Record<string, unknown>): Recipe

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Recipe } from '../services/schemas'
 
-export function useKeyboardNavigation(
+export function useSelectedRecipe(
   filteredRecipes: Recipe[],
   selectedRecipe: Recipe | null,
   setSelectedRecipe: (recipe: Recipe | null) => void

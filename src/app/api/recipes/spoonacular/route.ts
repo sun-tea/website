@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
-  const category = searchParams.get('category')
-  const query = searchParams.get('query')
   const source = searchParams.get('source') || 'spoonacular'
 
   if (source === 'spoonacular') {
-    const apiKey = process.env.NEXT_PUBLIC_SPOONACULAR_API_KEY
+    const baseUrl = `https://api.spoonacular.com/recipes/`
+    const apiKey = process.env.SPOONACULAR_API_KEY
+    const category = searchParams.get('category')
+    const query = searchParams.get('query')
+    const path = searchParams.get('path')
+    const ids = searchParams.get('ids')
 
     if (!apiKey) {
       return NextResponse.json(
@@ -17,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-      const url = 'https://api.spoonacular.com/recipes/complexSearch'
+      const url = `${baseUrl}${path}`
       const params = new URLSearchParams({
         apiKey,
         addRecipeInformation: 'true',
@@ -25,10 +28,13 @@ export async function GET(request: NextRequest) {
       })
 
       if (category && category !== 'all') {
-        params.append('type', category)
+        params.append('diet', category)
       }
       if (query) {
         params.append('query', query)
+      }
+      if (ids) {
+        params.append('ids', ids)
       }
 
       const response = await fetch(`${url}?${params}`)
@@ -38,7 +44,7 @@ export async function GET(request: NextRequest) {
         throw new Error(data.message || 'API request failed')
       }
 
-      return NextResponse.json(data.results || [])
+      return NextResponse.json(data)
     } catch (error) {
       console.error('Spoonacular API error:', error)
       return NextResponse.json(
@@ -48,6 +54,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Handle other sources (mealdb, etc.)
+  // Handle other sources
   return NextResponse.json({ error: 'Source not supported' }, { status: 400 })
 }

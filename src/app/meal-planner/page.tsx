@@ -6,7 +6,7 @@ import Link from 'next/link'
 import RecipeSidebar from './components/RecipeSidebar'
 import RecipeDetails from './components/RecipeDetails'
 import { getDifficultyColor, getCategoryEmoji } from './utils/recipeUtils'
-import { useKeyboardNavigation } from './hooks/useKeyboardNavigation'
+import { useSelectedRecipe } from './hooks/useSelectedRecipe'
 import ThemeToggle from '../components/ThemeToggle'
 import { useRecipesByCategory } from './hooks/useRecipes'
 import { Recipe } from './services/schemas'
@@ -35,7 +35,7 @@ export default function MealPlanner() {
     handleKeyDown,
     handleRecipeSelect,
     validateSelectedRecipe,
-  } = useKeyboardNavigation(filteredRecipes, selectedRecipe, setSelectedRecipe)
+  } = useSelectedRecipe(filteredRecipes, selectedRecipe, setSelectedRecipe)
 
   // Reset focus and validate selected recipe when filters change
   useEffect(() => {

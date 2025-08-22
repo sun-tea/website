@@ -97,18 +97,19 @@ export type SpoonacularListResponse = z.infer<
   typeof SpoonacularListResponseSchema
 >
 
-export const SpoonacularItemResponseSchema = z.object({
+// Base Spoonacular recipe schema
+export const SpoonacularRecipeSchema = z.object({
   id: z.number(),
   title: z.string(),
   summary: z.string(),
   image: z.string(),
   servings: z.number(),
   readyInMinutes: z.number(),
-  cookingMinutes: z.number(),
-  preparationMinutes: z.number(),
+  cookingMinutes: z.number().nullable(),
+  preparationMinutes: z.number().nullable(),
   sourceName: z.string(),
   sourceUrl: z.string(),
-  spoonacularSourceUrl: z.string(),
+  spoonacularSourceUrl: z.string().optional(),
   analyzedInstructions: z.array(
     z.object({
       name: z.string(),
@@ -121,10 +122,10 @@ export const SpoonacularItemResponseSchema = z.object({
     })
   ),
   glutenFree: z.boolean(),
-  instructions: z.string(),
+  instructions: z.string().nullable(),
   vegan: z.boolean(),
   vegetarian: z.boolean(),
-  whole30: z.boolean(),
+  whole30: z.boolean().optional(),
   dishTypes: z.array(z.string()),
   extendedIngredients: z.array(
     z.object({
@@ -142,4 +143,14 @@ export const SpoonacularItemResponseSchema = z.object({
   ),
 })
 
-export type SpoonacularMeal = z.infer<typeof SpoonacularItemResponseSchema>
+export const SpoonacularRecipeBulkResponseSchema = z.array(
+  SpoonacularRecipeSchema
+)
+
+export const SpoonacularRecipeResponseSchema = SpoonacularRecipeSchema
+
+export type SpoonacularRecipeBulkResponse = z.infer<
+  typeof SpoonacularRecipeBulkResponseSchema
+>
+
+export type SpoonacularRecipe = NonNullable<SpoonacularRecipeBulkResponse>[0]

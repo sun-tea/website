@@ -1,11 +1,16 @@
-import { Recipe, SpoonacularMeal } from '../services/schemas'
+import {
+  Recipe,
+  SpoonacularListResponseSchema,
+  SpoonacularRecipe,
+  SpoonacularRecipeBulkResponse,
+  SpoonacularRecipeBulkResponseSchema,
+} from '../services/schemas'
 import { RecipeAdapter } from '../types'
 
 export class SpoonacularAdapter implements RecipeAdapter {
-  private baseUrl = `https://api.spoonacular.com/recipes/`
-  private key = `?apiKey=${process.env.SPOONACULAR_API_KEY}&`
+  private baseUrl = '/api/recipes/spoonacular'
 
-  transform(meal: SpoonacularMeal): Recipe {
+  transform(meal: SpoonacularRecipe): Recipe {
     return {
       id: `spoon-${meal.id}`,
       name: meal.title,
@@ -18,28 +23,62 @@ export class SpoonacularAdapter implements RecipeAdapter {
       source: 'spoonacular',
       tags: [...(meal.dishTypes || [])],
       description:
-        meal.summary?.replace(/<[^>]*>/g, '').slice(0, 200) ||
-        'Yum yummy recipe',
+        meal.summary?.replace(/<[^>]*>/g, '') ||
+        'Missing description. Yummy yum!',
     }
   }
 
   async fetchByCategory(category: string): Promise<Recipe[]> {
-    const response = await fetch(
-      `${this.baseUrl}/complexSearch${this.key}diet=${category}`
-    )
-    const data = await response.json()
-    return data || []
+    try {
+      const response = await fetch(
+        `${this.baseUrl}?path=complexSearch&diet=${category}`
+      )
+      const rawData = await response.json()
+      const validatedData = SpoonacularListResponseSchema.parse(rawData)
+
+      if (!validatedData.results) {
+        return []
+      }
+
+      const ids = validatedData.results
+        .filter(meal => !!meal)
+        .map(meal => meal.id)
+      const recipes = await this.getRecipeInformationBulk(ids)
+      return recipes?.map(recipe => this.transform(recipe)) || []
+    } catch (error) {
+      console.error('Spoonacular fetch error:', error)
+      throw new Error(
+        `Failed to fetch recipes from Spoonacular: ${error instanceof Error ? error.message : 'Unknown error'}`
+      )
+    }
+  }
+
+  private async getRecipeInformationBulk(
+    ids: number[]
+  ): Promise<SpoonacularRecipeBulkResponse | null> {
+    try {
+      const response = await fetch(
+        `${this.baseUrl}?path=informationBulk&ids=${ids.join(',')}`
+      )
+      const rawData = await response.json()
+      const validatedData = SpoonacularRecipeBulkResponseSchema.parse(rawData)
+      return validatedData
+    } catch (error) {
+      console.error(
+        `Error fetching meal details for recipes ids ${ids}:`,
+        error
+      )
+      return null
+    }
   }
 
   async search(query: string): Promise<Recipe[]> {
-    const response = await fetch(
-      `${this.baseUrl}/complexSearch${this.key}query=${query}`
-    )
+    const response = await fetch(`${this.baseUrl}?query=${query}`)
     const data = await response.json()
     return data || []
   }
 
-  private calculateDifficulty(recipe: SpoonacularMeal): Recipe['difficulty'] {
+  private calculateDifficulty(recipe: SpoonacularRecipe): Recipe['difficulty'] {
     const time = recipe.readyInMinutes || 30
     const steps = recipe.analyzedInstructions?.[0]?.steps?.length || 5
 
@@ -63,12 +102,12 @@ export class SpoonacularAdapter implements RecipeAdapter {
   }
 
   private parseSpoonInstructions(
-    analyzedInstructions: SpoonacularMeal['analyzedInstructions']
+    analyzedInstructions: SpoonacularRecipe['analyzedInstructions']
   ): string[] {
     if (!analyzedInstructions?.[0]?.steps) return []
 
     return analyzedInstructions[0].steps.map(
-      (step: SpoonacularMeal['analyzedInstructions'][0]['steps'][0]) =>
+      (step: SpoonacularRecipe['analyzedInstructions'][0]['steps'][0]) =>
         step.step
     )
   }

@@ -10,7 +10,8 @@ export function useRecipesByCategory(
 ): UseQueryResult<Recipe[], Error> {
   return useQuery({
     queryKey: ['recipes', 'category', category],
-    queryFn: () => recipeService.getRecipesByCategory(category),
+    queryFn: () =>
+      recipeService.getRecipesByCategory(category, ['mealdb', 'spoonacular']),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     retry: 2,
