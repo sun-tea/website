@@ -45,7 +45,6 @@ export class MealDBAdapter implements RecipeAdapter {
       // For category queries, we need to fetch full details for each recipe
       const detailedRecipes = await Promise.all(
         validatedData.meals
-          .slice(0, 12)
           .filter(meal => !!meal)
           .map(meal => this.fetchMealDetails(meal.idMeal))
       )
