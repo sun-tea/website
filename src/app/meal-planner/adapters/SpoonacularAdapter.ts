@@ -88,17 +88,19 @@ export class SpoonacularAdapter implements RecipeAdapter {
   }
 
   private mapMealType(dishType?: string): Recipe['category'] {
-    if (!dishType) return 'dinner'
+    if (!dishType) return 'meal'
 
-    const breakfast = ['breakfast', 'brunch']
-    const lunch = ['lunch', 'salad', 'soup']
+    const breakfast = ['breakfast', 'brunch', 'morning']
+    const meal = ['lunch', 'main course', 'salad', 'soup', 'side']
     const snack = ['snack', 'dessert', 'appetizer']
+    const drink = ['drink', 'cocktail', 'beer', 'wine', 'soda', 'juice']
 
     const type = dishType.toLowerCase()
     if (breakfast.some(t => type.includes(t))) return 'breakfast'
-    if (lunch.some(t => type.includes(t))) return 'lunch'
+    if (meal.some(t => type.includes(t))) return 'meal'
     if (snack.some(t => type.includes(t))) return 'snack'
-    return 'dinner'
+    if (drink.some(t => type.includes(t))) return 'drink'
+    return 'meal'
   }
 
   private parseSpoonInstructions(

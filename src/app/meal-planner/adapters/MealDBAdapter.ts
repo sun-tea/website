@@ -9,13 +9,23 @@ import { RecipeAdapter } from '../types'
 export class MealDBAdapter implements RecipeAdapter {
   private baseUrl = 'https://www.themealdb.com/api/json/v1/1'
 
+  private categoryMap: Record<string, Recipe['category']> = {
+    cake: 'dessert',
+    main: 'meal',
+    appetizer: 'snack',
+    drink: 'drink',
+    dessert: 'dessert',
+    snack: 'snack',
+    meal: 'meal',
+  }
+
   transform(meal: MealDBMeal): Recipe {
     return {
       id: `mealdb-${meal.idMeal}`,
       name: meal.strMeal,
       cookTime: this.estimateCookTime(meal.strInstructions), // Custom logic
       difficulty: this.calculateDifficulty(meal), // Custom logic
-      category: this.mapCategory(meal.strCategory || ''),
+      category: this.mapCategory(meal),
       ingredients: this.extractIngredients(meal),
       instructions: this.parseInstructions(meal.strInstructions),
       protein: undefined,
@@ -126,17 +136,19 @@ export class MealDBAdapter implements RecipeAdapter {
       .map(step => step.replace(/^\d+\.?\s*/, '')) // Remove step numbers
   }
 
-  private mapCategory(category: string): Recipe['category'] {
-    const categoryMap: Record<string, Recipe['category']> = {
-      breakfast: 'breakfast',
-      starter: 'snack',
-      dessert: 'snack',
-      side: 'snack',
-      // more mappings to come
-    }
+  private mapCategory(category: MealDBMeal): Recipe['category'] {
+    const terms = [
+      ...(category.strTags?.split(',').map(tag => tag.trim().toLowerCase()) ||
+        []),
+      category.strCategory?.toLowerCase(),
+    ]
+    terms.map(term => {
+      if (term && term in this.categoryMap) {
+        return this.categoryMap[term]
+      }
+    })
 
-    const lowerCategory = category.toLowerCase()
-    return categoryMap[lowerCategory] || 'dinner'
+    return 'meal'
   }
 
   private calculateDifficulty(meal: MealDBMeal): Recipe['difficulty'] {

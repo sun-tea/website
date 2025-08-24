@@ -12,7 +12,7 @@ import { useRecipesByCategory } from './hooks/useRecipes'
 import { Recipe } from './services/schemas'
 
 export default function MealPlanner() {
-  const { data: recipes, isLoading } = useRecipesByCategory('Vegetarian')
+  const { data = [], isLoading } = useRecipesByCategory('Vegetarian')
 
   // const { data: searchResults } = useRecipeSearch(searchQuery, ['mealdb']);
 
@@ -20,22 +20,20 @@ export default function MealPlanner() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null)
 
-  // const filteredRecipes = sampleRecipes.filter(recipe => {
-  //   const categoryMatch =
-  //     selectedCategory === 'all' || recipe.category === selectedCategory
-  //   const difficultyMatch =
-  //     selectedDifficulty === 'all' || recipe.difficulty === selectedDifficulty
-  //   return categoryMatch && difficultyMatch
-  // })
-
-  const filteredRecipes = recipes || []
+  const filteredRecipes = data.filter(recipe => {
+    const categoryMatch =
+      selectedCategory === 'all' || recipe.category === selectedCategory
+    const difficultyMatch =
+      selectedDifficulty === 'all' || recipe.difficulty === selectedDifficulty
+    return categoryMatch && difficultyMatch
+  })
 
   const {
     focusedRecipeIndex,
     handleKeyDown,
     handleRecipeSelect,
     validateSelectedRecipe,
-  } = useSelectedRecipe(filteredRecipes, selectedRecipe, setSelectedRecipe)
+  } = useSelectedRecipe(data, selectedRecipe, setSelectedRecipe)
 
   // Reset focus and validate selected recipe when filters change
   useEffect(() => {
@@ -60,7 +58,7 @@ export default function MealPlanner() {
               ← Back to Portfolio
             </Link>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-              What do we eat?
+              Qu&apos;est ce qu&apos;on mange&#8239;?
             </h1>
           </div>
 

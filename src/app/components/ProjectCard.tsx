@@ -32,13 +32,13 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   return (
     <div className="bg-violet-200 dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-4">
+      <div className="p-6 flex flex-col h-full">
+        <div className="flex items-center justify-between mb-4 gap-8">
           <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
             {title}
           </h3>
           <span
-            className={`${status.bgColor} ${status.textColor} px-2 py-1 rounded text-xs font-medium`}
+            className={`${status.bgColor} ${status.textColor} px-2 py-1 rounded text-xs font-medium flex-shrink-0 self-start`}
           >
             {status.label}
           </span>
@@ -54,7 +54,7 @@ export default function ProjectCard({
             </span>
           ))}
         </div>
-        <div className="flex gap-3">
+        <div className="flex gap-3 mt-auto">
           {comingSoon ? (
             <span className="text-gray-400 dark:text-gray-200">
               Coming Soon

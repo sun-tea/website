@@ -116,7 +116,7 @@ export default function RecipeDetails({
                     key={index}
                     className="flex items-start gap-3 p-2 bg-gray-100 dark:bg-gray-700 rounded-lg"
                   >
-                    <div className="w-5 h-5 bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-medium mt-0.5">
+                    <div className="w-5 h-5 bg-blue-100 dark:bg-blue-800 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center text-xs font-medium mt-0.5 min-w-6">
                       {index + 1}
                     </div>
                     <span className="text-gray-700 dark:text-gray-300 text-sm">
@@ -137,7 +137,7 @@ export default function RecipeDetails({
               {selectedRecipe.instructions?.map(
                 (instruction: string, index: number) => (
                   <div key={index} className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1">
+                    <div className="w-6 h-6 bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 min-w-6">
                       {index + 1}
                     </div>
                     <p className="text-gray-700 dark:text-gray-300 text-sm pt-1">

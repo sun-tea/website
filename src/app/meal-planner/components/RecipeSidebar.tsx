@@ -84,9 +84,10 @@ export default function RecipeSidebar({
             >
               <option value="all">All Meals</option>
               <option value="breakfast">🌅 Breakfast</option>
-              <option value="lunch">🥗 Lunch</option>
-              <option value="dinner">🍽️ Dinner</option>
-              <option value="snack">🍿 Snacks</option>
+              <option value="meal">🍽️ Meal</option>
+              <option value="dessert">🍰 Dessert</option>
+              <option value="snack">🍿 Snack</option>
+              <option value="drink">🍺 Drink</option>
             </select>
           </div>
           <div>
@@ -108,7 +109,7 @@ export default function RecipeSidebar({
       </div>
 
       {/* Recipe List */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm flex-1 min-h-0 overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm flex-1 min-h-0 overflow-hidden flex flex-col">
         <div className="p-3 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm text-gray-900 dark:text-white">
@@ -123,7 +124,10 @@ export default function RecipeSidebar({
             </button>
           </div>
         </div>
-        <div ref={recipeListRef} className="divide-y overflow-y-auto h-full">
+        <div
+          ref={recipeListRef}
+          className="divide-y overflow-y-auto flex-1 min-h-0"
+        >
           {filteredRecipes.map((recipe, index) => (
             <RecipeItem
               key={recipe.id}

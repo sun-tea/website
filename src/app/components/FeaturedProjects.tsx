@@ -2,7 +2,7 @@ import ProjectCard from './ProjectCard'
 
 const projects = [
   {
-    title: 'Easy Meal Planner',
+    title: "Qu'est ce qu'on mange\xa0?",
     description:
       'A practical web app for planning quick, hearty meals. Built to solve my own cooking struggles with beginner-friendly recipes and smart filtering.',
     status: {
