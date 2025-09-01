@@ -3,6 +3,18 @@ import { z } from 'zod'
 // Music data schemas
 export const LastFMUserInfoSchema = z.object({
   playcount: z.string(),
+  name: z.string(),
+  image: z.array(
+    z.object({
+      '#text': z.string(),
+      size: z.enum(['small', 'medium', 'large', 'extralarge']),
+    })
+  ),
+  registered: z.object({
+    unixtime: z.string(),
+    '#text': z.number(),
+  }),
+  url: z.string(),
 })
 
 export const LastFMArtistSchema = z.object({

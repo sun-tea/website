@@ -49,14 +49,13 @@ export default function MealPlanner() {
         tabIndex={0}
       >
         <div className="h-full max-w-7xl mx-auto px-4 py-6 flex flex-col">
-          {/* Header */}
+          <Link
+            href="/"
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block"
+          >
+            ← Back to Portfolio
+          </Link>
           <div className="text-center mb-6 flex-shrink-0">
-            <Link
-              href="/"
-              className="text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block"
-            >
-              ← Back to Portfolio
-            </Link>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
               Qu&apos;est ce qu&apos;on mange&#8239;?
             </h1>

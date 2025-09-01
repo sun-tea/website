@@ -20,7 +20,9 @@ export default function Hero() {
           What I like
         </a>
         <a
-          href="/contact"
+          href="https://www.linkedin.com/in/xuanthinguyen/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg hover:bg-blue-50 dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-950 dark:hover:text-blue-100 transition"
         >
           Get In Touch
