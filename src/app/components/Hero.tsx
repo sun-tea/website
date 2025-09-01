@@ -14,10 +14,10 @@ export default function Hero() {
       </div>
       <div className="flex justify-center gap-4">
         <a
-          href="#projects"
+          href="me"
           className="bg-blue-500 text-white px-6 py-3 rounded-lg dark:bg-blue-600 hover:bg-blue-700 transition"
         >
-          View My Work
+          What I like
         </a>
         <a
           href="/contact"

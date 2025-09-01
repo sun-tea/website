@@ -34,7 +34,7 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="fixed top-4 right-4 z-50 p-4 rounded-lg bg-white dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-600"
+      className="fixed cursor-pointer top-4 right-4 z-50 p-4 rounded-lg bg-sky-100 dark:bg-gray-800 shadow-lg hover:shadow-xl transition-all duration-200 border border-gray-200 dark:border-gray-600"
       title={`Current: ${theme}, Resolved: ${resolvedTheme}. Click to cycle through themes.`}
     >
       <div className="flex items-center gap-2">
