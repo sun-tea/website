@@ -30,14 +30,15 @@ export const BoulderingArticleSchema = z.object({
   section: z.string().optional(),
   check: z.boolean().optional(), // Indicates if the boulder was completed
   date: z.string().optional(), // Completion date
-  photos: z.array(
-    z.object({
-      name: z.string().optional(),
-      photo: z.string().optional(),
-    })
-  ).optional(),
-  x: z.number().optional(),
-  y: z.number().optional(),
+  category: z.string().optional(),
+  photos: z
+    .array(
+      z.object({
+        name: z.string().optional(),
+        photo: z.string().optional(),
+      })
+    )
+    .optional(),
   dateCreated: z.string().optional(),
   dateCompleted: z.string().optional(),
   attempts: z.number().optional(),

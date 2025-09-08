@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+
 import { RecipeService } from '../services/RecipeService'
 
 export function useRecipeSearch(query: string, sources: string[] = ['mealdb']) {

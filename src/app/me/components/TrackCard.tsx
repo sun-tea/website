@@ -1,9 +1,10 @@
-import { useState } from 'react'
 import { motion } from 'framer-motion'
+import { useState } from 'react'
 
 import { LastFMRecentTrack } from '../schemas'
-import { NowPlayingIndicator } from './NowPlayingIndicator'
+
 import { Props } from './DraggableArea'
+import { NowPlayingIndicator } from './NowPlayingIndicator'
 
 type TrackCardProps = {
   track: LastFMRecentTrack

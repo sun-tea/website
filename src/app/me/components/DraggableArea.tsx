@@ -1,5 +1,5 @@
-import React, { RefObject, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import React, { RefObject, useRef, useState } from 'react'
 
 export type Props = {
   onBringToFront: (cardId: number) => void

@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 import ThemeToggle from '../components/ThemeToggle'
+
 import RecipeDetails from './components/RecipeDetails'
 import RecipeSidebar from './components/RecipeSidebar'
 import { useRecipesByCategory } from './hooks/useRecipes'

@@ -1,6 +1,7 @@
 import { MealDBAdapter } from '../adapters/MealDBAdapter'
 import { SpoonacularAdapter } from '../adapters/SpoonacularAdapter'
 import { RecipeAdapter } from '../types'
+
 import { Recipe, RecipeSchema } from './schemas'
 
 export class RecipeService {

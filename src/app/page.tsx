@@ -1,6 +1,6 @@
+import FeaturedProjects from './components/FeaturedProjects'
 import Hero from './components/Hero'
 import Skills from './components/Skills'
-import FeaturedProjects from './components/FeaturedProjects'
 import ThemeSwitcher from './components/ThemeSwitcher'
 
 export default function Home() {

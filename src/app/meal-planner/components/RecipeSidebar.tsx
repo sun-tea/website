@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react'
 
 import { Recipe } from '../services/schemas'
+
 import RecipeItem from './RecipeItem'
 import './style.scss'
 

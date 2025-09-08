@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion'
-import { LastFMTopArtist } from '../schemas'
 import { useState } from 'react'
+
+import { LastFMTopArtist } from '../schemas'
+
 import { Props } from './DraggableArea'
 
 type ArtistCardProps = {

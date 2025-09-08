@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { BoulderingArticle } from '../../../me/services/schemas'
+
 export async function GET(request: NextRequest) {
   try {
     const sessionCookie = request.cookies.get('activiteez-session')
@@ -69,7 +71,7 @@ export async function GET(request: NextRequest) {
 
     let articles = data.list || data.data || (Array.isArray(data) ? data : [])
 
-    articles = articles.filter((article: any) => {
+    articles = articles.filter((article: BoulderingArticle) => {
       const category = article.category || ''
       return ['Rouge', 'Violet'].includes(category)
     })

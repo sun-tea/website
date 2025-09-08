@@ -1,7 +1,7 @@
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 
-import { MusicService } from '../services/MusicService'
 import { LastFMMusicData } from '../schemas'
+import { MusicService } from '../services/MusicService'
 
 const musicService = new MusicService()
 
