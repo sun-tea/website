@@ -17,7 +17,7 @@ export default function RecipeDetails({
 }: RecipeDetailsProps) {
   if (!selectedRecipe) {
     return (
-      <div className="bg-white dark:bg-gray-800 lg:col-span-2 rounded-lg shadow-sm h-full flex items-center justify-center">
+      <div className="bg-white dark:bg-gray-800 lg:col-span-2 rounded-lg shadow-sm h-full min-h-[400px] p-4 flex items-center justify-center">
         <div className="text-center">
           <div className="text-5xl mb-3">🍳</div>
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
@@ -33,7 +33,7 @@ export default function RecipeDetails({
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 lg:col-span-2 rounded-lg shadow-sm h-full overflow-y-auto">
+    <div className="bg-white dark:bg-gray-800 lg:col-span-2 rounded-lg shadow-sm overflow-y-auto">
       {/* Recipe Header */}
       <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="flex items-start justify-between mb-4">
@@ -59,7 +59,7 @@ export default function RecipeDetails({
         </p>
 
         {/* Recipe Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+        <div className="grid grid-cols-3 gap-3 mb-4">
           <div className="text-center p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
             <div className="text-lg font-bold text-blue-600 dark:text-blue-400">
               {selectedRecipe.cookTime}
@@ -103,7 +103,27 @@ export default function RecipeDetails({
 
       {/* Recipe Content */}
       <div className="p-6">
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Instructions */}
+          <div className="col-span-2">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+              👨‍🍳 Instructions
+            </h3>
+            <div className="space-y-3">
+              {selectedRecipe.instructions?.map(
+                (instruction: string, index: number) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <div className="w-6 h-6 bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 min-w-6">
+                      {index + 1}
+                    </div>
+                    <p className="text-gray-700 dark:text-gray-300 text-sm pt-1">
+                      {instruction}
+                    </p>
+                  </div>
+                )
+              )}
+            </div>
+          </div>
           {/* Ingredients */}
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
@@ -122,27 +142,6 @@ export default function RecipeDetails({
                     <span className="text-gray-700 dark:text-gray-300 text-sm">
                       {ingredient}
                     </span>
-                  </div>
-                )
-              )}
-            </div>
-          </div>
-
-          {/* Instructions */}
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-              👨‍🍳 Instructions
-            </h3>
-            <div className="space-y-3">
-              {selectedRecipe.instructions?.map(
-                (instruction: string, index: number) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-6 h-6 bg-green-100 dark:bg-green-800 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-1 min-w-6">
-                      {index + 1}
-                    </div>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm pt-1">
-                      {instruction}
-                    </p>
                   </div>
                 )
               )}

@@ -13,7 +13,7 @@ export const RecipeSchema = z.object({
   image: z.string().optional(),
   source: z.enum(['mealdb', 'spoonacular', 'edamam', 'manual']),
   tags: z.array(z.string()),
-  description: z.string(),
+  description: z.string().optional(),
 })
 
 export type Recipe = z.infer<typeof RecipeSchema>

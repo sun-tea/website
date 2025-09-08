@@ -1,6 +1,6 @@
 import {
-  MealDBMeal,
   MealDBListResponseSchema,
+  MealDBMeal,
   Recipe,
 } from '../services/schemas'
 import { RecipeAdapter } from '../types'
@@ -32,7 +32,6 @@ export class MealDBAdapter implements RecipeAdapter {
       image: meal.strMealThumb,
       source: 'mealdb',
       tags: this.extractTags(meal),
-      description: `${meal.strCategory || 'International'} recipe${meal.strArea ? ` from ${meal.strArea}` : ''}`,
     }
   }
 

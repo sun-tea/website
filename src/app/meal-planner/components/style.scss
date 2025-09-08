@@ -1,0 +1,26 @@
+.infos {
+  grid-area: infos;
+}
+
+.filters {
+  grid-area: filters;
+}
+
+.recipe-list {
+  grid-area: recipe-list;
+}
+
+.wrapper {
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    'recipe-list infos'
+    'recipe-list filters';
+
+  @media (min-width: 64rem) {
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      'infos'
+      'filters'
+      'recipe-list';
+  }
+}
