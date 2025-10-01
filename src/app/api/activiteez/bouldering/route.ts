@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { BoulderingArticle } from '../../../me/services/schemas'
+import { BoulderingArticle } from '@/app/me/services/schemas'
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,8 +25,6 @@ export async function GET(request: NextRequest) {
         },
       }
     )
-
-    console.log('Bouldering data response status:', response.status)
 
     if (!response.ok) {
       if (response.status === 401) {
@@ -90,7 +88,6 @@ export async function GET(request: NextRequest) {
 }
 
 export async function DELETE() {
-  // Logout endpoint to clear session
   const response = NextResponse.json({ success: true, message: 'Logged out' })
 
   response.cookies.delete('activiteez-session')

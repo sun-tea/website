@@ -12,6 +12,8 @@ export const BoulderingCard = () => {
     photo: string
   } | null>(null)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5
   const { isAuthenticated } = useBoulderingAuth()
   const {
     data: articles,
@@ -23,13 +25,18 @@ export const BoulderingCard = () => {
     ? BoulderingService.calculateStats(articles)
     : undefined
 
-  const completedProblems = articles
-    ?.filter(article => article.check === true)
-    .sort(
-      (a, b) =>
-        new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime()
-    )
-    .slice(0, 5)
+  const allCompletedProblems =
+    articles
+      ?.filter(article => article.check === true)
+      .sort(
+        (a, b) =>
+          new Date(b.date || 0).getTime() - new Date(a.date || 0).getTime()
+      ) || []
+
+  const totalPages = Math.ceil(allCompletedProblems.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const completedProblems = allCompletedProblems.slice(startIndex, endIndex)
 
   if (isLoading) {
     return (
@@ -76,7 +83,7 @@ export const BoulderingCard = () => {
               return (
                 <li
                   key={problem._id}
-                  className="flex justify-between text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 cursor-pointer transition-colors"
+                  className="flex justify-between text-sm text-gray-600 dark:text-gray-400 hover:text-sky-600 dark:hover:text-sky-200 cursor-pointer transition-colors"
                   onMouseEnter={() => {
                     if (photoUrl) {
                       setHoveredProblem({ id: problem._id, photo: photoUrl })
@@ -92,7 +99,12 @@ export const BoulderingCard = () => {
                   }}
                   onMouseLeave={() => setHoveredProblem(null)}
                 >
-                  <span>{problem.summary || 'Unnamed problem'}</span>
+                  <span className="flex gap-1">
+                    {problem.summary || 'Unnamed problem'}{' '}
+                    <span className="text-gray-400 dark:text-gray-600">
+                      | {problem.category}
+                    </span>
+                  </span>
                   <span className="text-xs">
                     {problem.date
                       ? new Date(problem.date).toLocaleDateString('en-US', {
@@ -105,6 +117,32 @@ export const BoulderingCard = () => {
               )
             })}
           </ul>
+
+          {totalPages > 1 && (
+            <div className="mt-4 flex items-center justify-between">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-50 cursor-pointer disabled:cursor-not-allowed transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Page {currentPage} of {totalPages}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -120,8 +158,8 @@ export const BoulderingCard = () => {
             <img
               src={hoveredProblem.photo}
               alt="Boulder problem"
-              width={300}
-              height={300}
+              width={450}
+              height={450}
               style={{ objectFit: 'cover', borderRadius: '0.375rem' }}
               onError={e => {
                 setHoveredProblem(null)
@@ -133,7 +171,7 @@ export const BoulderingCard = () => {
 
       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <div className="text-xs text-gray-500 dark:text-gray-500 italic">
-          Only include routes in my level range aka around V3 (at best...)
+          Only include routes in my level range aka around V3/6a (at best)
         </div>
       </div>
     </div>

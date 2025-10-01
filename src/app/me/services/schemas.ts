@@ -25,7 +25,6 @@ export const BoulderingArticleSchema = z.object({
   summary: z.string().optional(),
   description: z.string().optional(),
   difficulty: z.string().optional(),
-  grade: z.string().optional(),
   status: z.string().optional(),
   section: z.string().optional(),
   check: z.boolean().optional(), // Indicates if the boulder was completed
@@ -39,10 +38,7 @@ export const BoulderingArticleSchema = z.object({
       })
     )
     .optional(),
-  dateCreated: z.string().optional(),
-  dateCompleted: z.string().optional(),
-  attempts: z.number().optional(),
-  // Add more properties as discovered
+  start: z.string().optional(),
 })
 
 export const BoulderingDataResponseSchema = z.object({

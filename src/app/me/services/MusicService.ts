@@ -1,7 +1,7 @@
 import { LastFMMusicData, LastFMMusicDataSchema } from '../schemas'
 
 export class MusicService {
-  private baseUrl = '/api/webhook/lastfm'
+  private baseUrl = '/api/lastfm'
 
   async getMusicStats(): Promise<LastFMMusicData> {
     try {
@@ -13,7 +13,6 @@ export class MusicService {
 
       const rawData = await response.json()
 
-      // Validate the data with Zod schema
       const validatedData = LastFMMusicDataSchema.parse(rawData)
 
       return validatedData
