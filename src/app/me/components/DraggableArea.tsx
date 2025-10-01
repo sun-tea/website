@@ -39,7 +39,7 @@ export function DraggableArea<T extends { name?: string; playcount?: string }>({
       </h3>
       <div className="bg-gradient-to-br from-slate-900/50 via-purple-900/50 to-slate-900/50 p-8 overflow-hidden">
         <div className="max-w-6xl mx-auto">
-          <div className="relative h-96 mb-16" ref={containerRef}>
+          <div className="relative h-[500px] mb-16" ref={containerRef}>
             <AnimatePresence>
               {displayedItems.map((item, index) => (
                 <div key={index}>

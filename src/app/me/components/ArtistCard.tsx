@@ -2,6 +2,10 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 import { LastFMTopArtist } from '../schemas'
+import {
+  calculateCardPosition,
+  getDragConstraints,
+} from '../utils/cardPositioning'
 
 import { Props } from './DraggableArea'
 
@@ -19,12 +23,18 @@ export function ArtistCard({
 }: ArtistCardProps) {
   const [customPosition, setCustomPosition] = useState({ x: 0, y: 0 })
 
+  // Calculate position using shared utility
+  const position = calculateCardPosition(
+    index,
+    customPosition,
+    {},
+    dragConstraintsRef
+  )
+
   return (
     <motion.div
       drag
-      dragConstraints={
-        dragConstraintsRef ?? { left: -50, right: 300, top: -50, bottom: 200 }
-      }
+      dragConstraints={dragConstraintsRef}
       dragElastic={0.2}
       whileDrag={{
         scale: 1.05,
@@ -57,8 +67,8 @@ export function ArtistCard({
       }}
       className={`absolute w-3xs bg-gradient-to-br p-5 rounded-2xl shadow-lg text-white min-w-80 max-w-sm select-none bg-radial-[at_80%_15%] from-fuchsia-300 via-pink-500 to-pink-800 dark:from-fuchsia-900 dark:via-pink-800 dark:to-pink-950 to-90%`}
       style={{
-        left: `${20 + index * 60 + customPosition.x}px`,
-        top: `${20 + index * 40 + customPosition.y}px`,
+        left: `${position.x}px`,
+        top: `${position.y}px`,
         transformOrigin: 'center',
         zIndex,
       }}
